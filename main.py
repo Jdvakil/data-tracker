@@ -26,8 +26,10 @@ def get_names():
     return(names_final)
 
 def main():
+    sum = 0
     total = 0
     ls = get_dir()
+    names = get_names()
     for i in ls:
         DIR_PATH = os.path.join(PATH,i)
         for root, dirs, files in os.walk(DIR_PATH):
@@ -35,8 +37,12 @@ def main():
                 if j.endswith(".pickle"):
                     #print(j)
                     total+=1
+                    sum+=1
 
-    print(total * 25)
+        print(f"{i} - {total*25}")
+        total = 0
+
+    print(sum * 25)
 
 if __name__ == "__main__":
     main()
