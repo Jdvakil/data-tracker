@@ -1,5 +1,7 @@
 import os
 from re import L
+import time
+import a0
 
 PATH = "/mnt/robopen_dataset/robopen_dataset/v0.2"
 
@@ -26,23 +28,27 @@ def get_names():
     return(names_final)
 
 def main():
-    sum = 0
-    total = 0
-    ls = get_dir()
-    names = get_names()
-    for i in ls:
-        DIR_PATH = os.path.join(PATH,i)
-        for root, dirs, files in os.walk(DIR_PATH):
-            for j in files:
-                if j.endswith(".pickle"):
-                    #print(j)
-                    total+=1
-                    sum+=1
-
-        print(f"{i} - {total*25}")
+    while True:
+        p = a0.Publisher("topic")
+        sum = 0
         total = 0
+        ls = get_dir()
+        names = get_names()
+        for i in ls:
+            DIR_PATH = os.path.join(PATH,i)
+            for root, dirs, files in os.walk(DIR_PATH):
+                for j in files:
+                    if j.endswith(".pickle"):
+                        #print(j)
+                        total+=1
+                        sum+=1
 
-    print(sum * 25)
+            print(f"{i} - {total*25}")
+            total = 0
+        print(f"Sum - {sum * 25}")
+
+        time.sleep(10)
+        print("_____________________________________________________\n")
 
 if __name__ == "__main__":
     main()
