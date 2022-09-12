@@ -57,17 +57,16 @@ def publisher():
             print(f"{i} - {total}")
             total = 0
         print(f"Sum - {sum * 25}")
-        time.sleep(10)
+        time.sleep(100)
         print("_____________________________________________________\n")
-        return sum
+        return sum * 25
 
 def main():
     while True:
-        
-        if(datetime.time(datetime.now()).hour == 18 and datetime.time(datetime.now()).minute == 47 and datetime.time(datetime.now()).second == 0):
-            test = publisher()
+        test = publisher()
+        if(datetime.time(datetime.now()).hour == 18 and datetime.time(datetime.now()).minute == 50 and datetime.time(datetime.now()).second == 0):
             log(test)
-            print(test*25)
+            print(test)
 
     
 
