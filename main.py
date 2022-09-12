@@ -1,9 +1,11 @@
 import os
+from queue import Empty
 from re import L
 import time
 import a0
+from datetime import date, datetime
 
-PATH = "/mnt/robopen_dataset/robopen_dataset/v0.2"
+PATH = "/mnt/nfs_data/roboset/v0.2/"
 
 def get_dir():
     return next(os.walk(PATH))[1]
@@ -26,9 +28,19 @@ def get_names():
         names_final.append(temp.rstrip())
         temp = ""
     return(names_final)
+    
+def log(text):
+    f = open("log.txt", "a")
+    with open("log.txt", "r") as file:
+        if os.stat("log.txt").st_size != 0:
+            last_line = file.readlines()[-1]
+        else:
+            last_line = 0
+    sum = text - int(last_line)
+    f.write(f"{text-int(last_line)}\n")
+    f.close()
 
-def main():
-    while True:
+def publisher():
         p = a0.Publisher("topic")
         sum = 0
         total = 0
@@ -42,13 +54,22 @@ def main():
                         #print(j)
                         total+=1
                         sum+=1
-
-            print(f"{i} - {total*25}")
+            print(f"{i} - {total}")
             total = 0
         print(f"Sum - {sum * 25}")
-
         time.sleep(10)
         print("_____________________________________________________\n")
+        return sum
+
+def main():
+    while True:
+        
+        if(datetime.time(datetime.now()).hour == 18 and datetime.time(datetime.now()).minute == 47 and datetime.time(datetime.now()).second == 0):
+            test = publisher()
+            log(test)
+            print(test*25)
+
+    
 
 if __name__ == "__main__":
     main()
