@@ -29,15 +29,19 @@ def get_names():
         temp = ""
     return(names_final)
     
-def log(text):
-    f = open("log.txt", "a")
-    with open("log.txt", "r") as file:
-        if os.stat("log.txt").st_size != 0:
-            last_line = file.readlines()[-1]
-        else:
-            last_line = 0
-    sum = text - int(last_line)
-    f.write(f"{text-int(last_line)}\n")
+def log(text, file):
+    f = open(file, "a")
+    if file == "log.txt":
+        with open(file, "r") as filename:
+            if os.stat(file).st_size != 0:
+                last_line = filename.readlines()[-1]
+            else:
+                last_line = 0
+            sum = text - int(last_line)
+    else:
+        sum = text
+    f.write(f"{sum}\n")
+    print(f"logged to: {file}")
     f.close()
 
 def publisher():
@@ -57,16 +61,16 @@ def publisher():
             print(f"{i} - {total}")
             total = 0
         print(f"Sum - {sum * 25}")
-        time.sleep(100)
+        time.sleep(10)
         print("_____________________________________________________\n")
         return sum * 25
 
 def main():
     while True:
         test = publisher()
-        if(datetime.time(datetime.now()).hour == 18 and datetime.time(datetime.now()).minute == 50 and datetime.time(datetime.now()).second == 0):
-            log(test)
-            print(test)
+        if(datetime.time(datetime.now()).hour == 19 and datetime.time(datetime.now()).minute == 0 and datetime.time(datetime.now()).second in range(0,10)):
+            log(test, "log.txt")
+            log(f"{datetime.now()} - {test}", "date_logs.txt")
 
     
 
