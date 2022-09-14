@@ -2,8 +2,8 @@ import mrp
 import platform
 import os
 
-LOG_PATH = f"/nfs/perception_logs/{platform.node()}"
-if os.path.exists(LOG_PATH):
+LOG_PATH = f"/mnt/tmp_nfs_clientshare/jaydv/data-tracker"
+if not os.path.exists(LOG_PATH):
     os.makedirs(LOG_PATH, exist_ok=True)
 
 

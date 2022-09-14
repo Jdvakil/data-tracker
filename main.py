@@ -4,6 +4,7 @@ from re import L
 import time
 import a0
 from datetime import date, datetime
+import csv
 
 PATH = "/mnt/nfs_data/roboset/v0.2/"
 
@@ -29,7 +30,7 @@ def get_names():
         temp = ""
     return(names_final)
     
-def log(text, file):
+def log_text(text, file):
     f = open(file, "a")
     if file == "log.txt":
         with open(file, "r") as filename:
@@ -43,6 +44,11 @@ def log(text, file):
     f.write(f"{sum}\n")
     print(f"logged to: {file}")
     f.close()
+
+def log_csv(text,file):
+    with open(file, 'a') as f:
+        writer = csv.writer(f)
+        writer.writerow(text)
 
 def publisher():
         p = a0.Publisher("topic")
@@ -68,9 +74,10 @@ def publisher():
 def main():
     while True:
         test = publisher()
-        if(datetime.time(datetime.now()).hour == 19 and datetime.time(datetime.now()).minute == 0 and datetime.time(datetime.now()).second in range(0,10)):
-            log(test, "log.txt")
-            log(f"{datetime.now()} - {test}", "date_logs.txt")
+        if(datetime.time(datetime.now()).hour == 23 and datetime.time(datetime.now()).minute == 59 and datetime.time(datetime.now()).second in range(0,10)):
+            log_text(test, "log.txt")
+            field = [datetime.now(), test]
+            log_csv(field, "date_logs.csv")
 
     
 
