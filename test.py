@@ -1,6 +1,9 @@
 import os
 from re import L
+from sre_constants import GROUPREF_EXISTS
 import time
+import csv
+import datetime
 
 PATH="/mnt/nfs_data/roboset/v0.2/"
 def get_output():
@@ -24,10 +27,14 @@ def get_output():
             trajs = 0
 
     logstr += (f"Total: {total}\n")
-    return logstr
+    return total,logstr
 
+def text_logger(text,file):
+    with open(file, 'a') as f:
+            writer = csv.writer(f)
+            writer.writerow(text)
 def main():
-    while True:
-        print(get_output())
-        time.sleep(5)
+    #TODO Add a logger and more time structure
+    total,log = get_output()
+    text_logger([datetime.datetime.today().date(),total], "datetime.csv")    
 main()
