@@ -1,85 +1,90 @@
 import os
-from queue import Empty
-from re import L
 import time
-import a0
-from datetime import date, datetime
 import csv
+import datetime
+import sys
 
-PATH = "/mnt/nfs_data/roboset/v0.2/"
+PATH="/mnt/nfs_data/roboset/v0.3"
 
-def get_dir():
-    return next(os.walk(PATH))[1]
-def get_names():
-    names = get_dir()
-    names_stripped = []
-    for i in names:
-        names_stripped.append(i.split("_"))
-    count = 0
-    while count < len(names_stripped):
-        if names_stripped[count][-2:-1] == "data":
-            names_stripped[count].pop()
-        count+=1
-        
-    names_final = []  
-    temp = ""  
-    for i in names_stripped:
-        for j in i:
-            temp+=j + " "
-        names_final.append(temp.rstrip())
-        temp = ""
-    return(names_final)
-    
-def log_text(text, file):
-    f = open(file, "a")
-    if file == "log.txt":
-        with open(file, "r") as filename:
-            if os.stat(file).st_size != 0:
-                last_line = filename.readlines()[-1]
-            else:
-                last_line = 0
-            sum = text - int(last_line)
+
+def get_output():
+    ls = next(os.walk(PATH))[1] #get the top dirs (rp00,01,...,0n)
+    ls = sorted(ls)
+    logstr = ""
+
+    logstr += ("____________________________________________________________________\n\n")
+    trajs = 0 #total trajs per task
+    total = 0 #total trajs 
+    for i in ls:  #go through each robopen
+        logstr += (f"{i}: \n")
+        top = (next(os.walk(os.path.join(PATH,i)))[1]) # go through each task in the robopen
+        for task in top:#cycle through the tasks
+            dirname = os.path.join(PATH,i,task)
+            for path,dir,file in os.walk(dirname): #go through the task folders
+                for f in file:#cycle through the files
+                    if f.endswith(".pickle"):
+                        trajs+=1
+                        total += 25
+            logstr += (f" - {task} - {trajs} or {trajs * 25} trajectories\n")
+            trajs = 0
+
+    logstr += (f"Total: {total}\n")
+    return logstr, total
+
+
+def csv_logger(text,file):
+    if file.endswith(".csv"):
+        with open(file,'a') as f:
+            writer = csv.writer(f)
+            writer.writerow(text)
+            count = 0
+        while count < 3:
+            sys.stdout.write(f"\r - logging to {file}")
+            time.sleep(0.7)
+            count +=1
+            sys.stdout.write(f"\r - logging to {file}.")
+            time.sleep(0.7)
+            count += 1
+            sys.stdout.write(f"\r - logging to {file}..")
+            time.sleep(0.7)
+            count += 1
+            sys.stdout.write(f"\r - logging to {file}...\n")
+            time.sleep(0.7)
+            count += 1
+        print(f" - Logged to {file}")
     else:
-        sum = text
-    f.write(f"{sum}\n")
-    print(f"logged to: {file}")
-    f.close()
+        print(f" - Nothing was logged to {file}, enter a file ending in '.csv'")
 
-def log_csv(text,file):
-    with open(file, 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow(text)
-
-def publisher():
-        p = a0.Publisher("topic")
-        sum = 0
-        total = 0
-        ls = get_dir()
-        names = get_names()
-        for i in ls:
-            DIR_PATH = os.path.join(PATH,i)
-            for root, dirs, files in os.walk(DIR_PATH):
-                for j in files:
-                    if j.endswith(".pickle"):
-                        #print(j)
-                        total+=1
-                        sum+=1
-            print(f"{i} - {total}")
-            total = 0
-        print(f"Sum - {sum * 25}")
-        time.sleep(10)
-        print("_____________________________________________________\n")
-        return sum * 25
+def text_logger(text,file):
+    if file.endswith(".txt"):
+        with open(file,'a') as f:
+            f.write(text)
+            count = 0
+        while count < 3:
+            sys.stdout.write(f"\r - logging to {file}")
+            time.sleep(0.7)
+            count +=1
+            sys.stdout.write(f"\r - logging to {file}.")
+            time.sleep(0.7)
+            count += 1
+            sys.stdout.write(f"\r - logging to {file}..")
+            time.sleep(0.7)
+            count += 1
+            sys.stdout.write(f"\r - logging to {file}...\n")
+            time.sleep(0.7)
+            count += 1
+        print(f" - Logged to {file}")
+    else:
+        print(f" - Nothing was logged to {file}, enter a file ending in '.txt'")
 
 def main():
-    while True:
-        test = publisher()
-        if(datetime.time(datetime.now()).hour == 23 and datetime.time(datetime.now()).minute == 59 and datetime.time(datetime.now()).second in range(0,10)):
-            log_text(test, "log.txt")
-            field = [datetime.now(), test]
-            log_csv(field, "date_logs.csv")
-
-    
+    log,total = get_output()
+    print(log)
+    text_logger(log, "log.txt")
+    csv_logger([datetime.datetime.today().date(),total], "datetime.csv") 
 
 if __name__ == "__main__":
-    main()
+    while True:
+        if datetime.datetime.now().hour == 23 and datetime.datetime.now().minute == 59 and datetime.datetime.now().second == 0:
+            main()
+
