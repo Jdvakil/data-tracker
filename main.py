@@ -15,6 +15,7 @@ def get_output():
     logstr += ("____________________________________________________________________\n\n")
     trajs = 0 #total trajs per task
     total = 0 #total trajs 
+    task_traj_count = 0
     for i in ls:  #go through each robopen
         logstr += (f"{i}: \n")
         top = (next(os.walk(os.path.join(PATH,i)))[1]) # go through each task in the robopen
@@ -23,14 +24,16 @@ def get_output():
             for path,dir,file in os.walk(dirname): #go through the task folders
                 for f in file:#cycle through the files
                     if f.endswith(".pickle"):
+                        traj_count = (int(os.path.splitext(f)[0][-3:-1]))
                         trajs+=1
-                        total += 25
-            logstr += (f" - {task} - {trajs} or {trajs * 25} trajectories\n")
+                        total += traj_count
+                        task_traj_count += traj_count
+            logstr += (f" - {task} - {trajs} or {task_traj_count} trajectories\n")
             trajs = 0
+            task_traj_count = 0
 
     logstr += (f"Total: {total}\n")
     return logstr, total
-
 
 def csv_logger(text,file):
     if file.endswith(".csv"):
