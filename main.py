@@ -24,7 +24,7 @@ def get_output():
             for path,dir,file in os.walk(dirname): #go through the task folders
                 for f in file:#cycle through the files
                     if f.endswith(".pickle"):
-                        traj_count = (int(os.path.splitext(f)[0][-3:-1]))
+                        traj_count = (int((os.path.splitext(f)[0][-3:-1]).strip("_")))
                         trajs+=1
                         total += traj_count
                         task_traj_count += traj_count
